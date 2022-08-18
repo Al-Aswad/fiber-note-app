@@ -30,6 +30,8 @@ func main() {
 	})
 
 	app.Post("/activity-groups", activityController.Create)
+	app.Get("/activity-groups", activityController.GetAll)
+	app.Get("/activity-groups/:id", activityController.GetOne)
 
 	app.Listen(":3000")
 }

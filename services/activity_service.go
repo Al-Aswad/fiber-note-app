@@ -12,6 +12,8 @@ import (
 
 type ActivityService interface {
 	CreateActivity(activity requests.CreateActivity) (interface{}, error)
+	GetAllActivity() ([]models.Activity, error)
+	GetOne(id int) (models.Activity, error)
 }
 
 type ActivityServiceImpl struct {
@@ -48,4 +50,23 @@ func (a *ActivityServiceImpl) CreateActivity(activity requests.CreateActivity) (
 	}
 
 	return activityCreate, nil
+}
+
+func (a *ActivityServiceImpl) GetAllActivity() ([]models.Activity, error) {
+	activity, err := a.activityRepo.GetAll()
+	fmt.Println("activity ", activity)
+	if err != nil {
+		return nil, err
+	}
+
+	return activity, nil
+}
+
+func (a *ActivityServiceImpl) GetOne(id int) (models.Activity, error) {
+	activity, err := a.activityRepo.GetOne(id)
+	if err != nil {
+		return models.Activity{}, err
+	}
+
+	return activity, nil
 }
