@@ -2,6 +2,9 @@ package main
 
 import (
 	"al-aswad/fiber-note-app/config"
+	"al-aswad/fiber-note-app/controllers"
+	"al-aswad/fiber-note-app/repositories"
+	"al-aswad/fiber-note-app/services"
 	"fmt"
 
 	"github.com/goccy/go-json"
@@ -11,6 +14,9 @@ import (
 )
 
 var db *gorm.DB = config.DBConnect()
+var activityRep repositories.ActivityRepository = repositories.NewActivityRepository(db)
+var activityService services.ActivityService = services.NewActivitySerive(activityRep)
+var activityController controllers.ActivityController = controllers.NewActivityController(activityService)
 
 func main() {
 	err := db.Error
@@ -23,9 +29,7 @@ func main() {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	app.Get("/", func(ctx *fiber.Ctx) error {
-		return ctx.SendString("Hello, World!")
-	})
+	app.Post("/activity-groups", activityController.Create)
 
 	app.Listen(":3000")
 }

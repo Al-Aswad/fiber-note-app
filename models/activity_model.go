@@ -1,10 +1,16 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Activity struct {
-	Email string
-	Title string
-	Todo  []Todo `gorm:"foreignKey:ID;references:ID"`
-	gorm.Model
+	ID        uint           `json:"id"`
+	Email     string         `json:"email"`
+	Title     string         `json:"title"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"update_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
