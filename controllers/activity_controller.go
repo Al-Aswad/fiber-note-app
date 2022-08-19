@@ -152,7 +152,7 @@ func (a *activityController) Delete(ctx *fiber.Ctx) error {
 
 	_, hasil := a.activityServ.DeleteActivity(id)
 	if !hasil {
-		res := helpers.BuildErrorResponse("Activity with ID"+ctx.Params("id")+" Not Found", "not found", helpers.EmptyResponse{})
+		res := helpers.BuildErrorResponse("Activity with ID "+ctx.Params("id")+" Not Found", "not found", helpers.EmptyResponse{})
 		ctx.JSON(res)
 		ctx.Status(404)
 		return err
