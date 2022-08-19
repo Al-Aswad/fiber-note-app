@@ -33,6 +33,7 @@ func main() {
 	app.Get("/activity-groups", activityController.GetAll)
 	app.Get("/activity-groups/:id", activityController.GetOne)
 	app.Delete("/activity-groups/:id", activityController.Delete)
+	app.Patch("/activity-groups/:id", activityController.Update)
 
 	app.Listen(":3000")
 }

@@ -11,7 +11,7 @@ type ActivityRepository interface {
 	Create(activity models.Activity) (models.Activity, error)
 	GetAll() ([]models.Activity, error)
 	GetOne(id int) (models.Activity, error)
-	Update()
+	Update(id int, activity models.Activity) (models.Activity, error)
 	Delete(id int) bool
 }
 
@@ -56,9 +56,20 @@ func (a *activityRepository) GetOne(id int) (models.Activity, error) {
 	return activity, nil
 }
 
-func (a *activityRepository) Update() {
+func (a *activityRepository) Update(id int, activity models.Activity) (models.Activity, error) {
+	var activityUpdate models.Activity
 
+	err := a.db.Debug().Model(&activityUpdate).Where("id = ?", id).Updates(&activity)
+	if err.RowsAffected == 0 {
+		log.Println("Update ", err.Error)
+		log.Println("Update Effect ", err.RowsAffected)
+		return models.Activity{}, err.Error
+	}
+
+	return activityUpdate, nil
 }
+
+// Refactor
 func (a *activityRepository) Delete(id int) bool {
 	activity := models.Activity{}
 

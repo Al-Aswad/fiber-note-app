@@ -14,6 +14,7 @@ type ActivityController interface {
 	GetAll(ctx *fiber.Ctx) error
 	GetOne(ctx *fiber.Ctx) error
 	Delete(ctx *fiber.Ctx) error
+	Update(ctx *fiber.Ctx) error
 }
 
 type activityController struct {
@@ -92,6 +93,42 @@ func (a *activityController) GetOne(ctx *fiber.Ctx) error {
 
 	return nil
 
+}
+
+func (a *activityController) Update(ctx *fiber.Ctx) error {
+	archiveUpdate := requests.CreateActivity{}
+
+	id, err := strconv.Atoi(ctx.Params("id"))
+	if err != nil {
+		res := helpers.BuildErrorResponse("Not Found", err.Error(), nil)
+		ctx.JSON(res)
+		ctx.Status(404)
+		return err
+	}
+
+	errBind := ctx.BodyParser(&archiveUpdate)
+
+	if errBind != nil {
+		res := helpers.BuildErrorResponse("Not Found", errBind.Error(), nil)
+		ctx.JSON(res)
+		ctx.Status(404)
+		return errBind
+	}
+
+	result, err := a.activityServ.UpdateActivity(id, archiveUpdate)
+
+	if err != nil {
+		res := helpers.BuildErrorResponse("Not Found", err.Error(), nil)
+		ctx.JSON(res)
+		ctx.Status(404)
+		return err
+	}
+
+	res := helpers.BuildResponse("Success", "Success", result)
+	ctx.JSON(res)
+	ctx.Status(200)
+
+	return nil
 }
 
 func (a *activityController) Delete(ctx *fiber.Ctx) error {
