@@ -14,6 +14,7 @@ type ActivityService interface {
 	CreateActivity(activity requests.CreateActivity) (interface{}, error)
 	GetAllActivity() ([]models.Activity, error)
 	GetOne(id int) (models.Activity, error)
+	DeleteActivity(id int) (models.Activity, bool)
 }
 
 type ActivityServiceImpl struct {
@@ -69,4 +70,16 @@ func (a *ActivityServiceImpl) GetOne(id int) (models.Activity, error) {
 	}
 
 	return activity, nil
+}
+
+func (a *ActivityServiceImpl) DeleteActivity(id int) (models.Activity, bool) {
+	var activity models.Activity
+	hasil := a.activityRepo.Delete(id)
+
+	if !hasil {
+		return activity, false
+
+	}
+
+	return activity, true
 }

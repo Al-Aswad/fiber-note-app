@@ -13,6 +13,7 @@ type ActivityController interface {
 	Create(ctx *fiber.Ctx) error
 	GetAll(ctx *fiber.Ctx) error
 	GetOne(ctx *fiber.Ctx) error
+	Delete(ctx *fiber.Ctx) error
 }
 
 type activityController struct {
@@ -91,4 +92,28 @@ func (a *activityController) GetOne(ctx *fiber.Ctx) error {
 
 	return nil
 
+}
+
+func (a *activityController) Delete(ctx *fiber.Ctx) error {
+	id, err := strconv.Atoi(ctx.Params("id"))
+	if err != nil {
+		res := helpers.BuildErrorResponse("Error", err.Error(), nil)
+		ctx.JSON(res)
+		ctx.Status(404)
+		return err
+	}
+
+	_, hasil := a.activityServ.DeleteActivity(id)
+	if !hasil {
+		res := helpers.BuildErrorResponse("Activity with ID"+ctx.Params("id")+" Not Found", "not found", helpers.EmptyResponse{})
+		ctx.JSON(res)
+		ctx.Status(404)
+		return err
+	}
+
+	res := helpers.BuildResponse("Success", "Success", helpers.EmptyResponse{})
+	ctx.JSON(res)
+	ctx.Status(200)
+
+	return nil
 }
