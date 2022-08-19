@@ -40,6 +40,7 @@ func main() {
 	app.Patch("/activity-groups/:id", activityController.Update)
 
 	app.Post("/todo-items", todoController.Create)
+	app.Get("/todo-items", todoController.GetAll)
 
 	app.Listen(":3000")
 }

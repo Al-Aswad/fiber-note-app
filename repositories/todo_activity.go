@@ -8,6 +8,7 @@ import (
 
 type TodoRepository interface {
 	Create(todo models.Todo) (models.Todo, error)
+	GetAll() ([]models.Todo, error)
 }
 
 type todoRepository struct {
@@ -29,4 +30,14 @@ func (t *todoRepository) Create(todo models.Todo) (models.Todo, error) {
 
 	return todo, nil
 
+}
+
+func (t *todoRepository) GetAll() ([]models.Todo, error) {
+	todo := []models.Todo{}
+
+	err := t.db.Find(&todo).Error
+	if err != nil {
+		return nil, err
+	}
+	return todo, nil
 }

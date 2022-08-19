@@ -11,6 +11,7 @@ import (
 
 type TodoService interface {
 	Create(todo requests.CreateTodo) (models.Todo, error)
+	GetAll() ([]models.Todo, error)
 }
 
 type todoService struct {
@@ -40,4 +41,15 @@ func (t *todoService) Create(todo requests.CreateTodo) (models.Todo, error) {
 	}
 
 	return result, nil
+}
+
+func (t *todoService) GetAll() ([]models.Todo, error) {
+	todo, err := t.todoRepo.GetAll()
+	if err != nil {
+		return nil, err
+
+	}
+
+	return todo, nil
+
 }
