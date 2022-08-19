@@ -30,12 +30,6 @@ func NewActivitySerive(activityRepo repositories.ActivityRepository) ActivitySer
 }
 
 func (a *ActivityServiceImpl) CreateActivity(activity requests.CreateActivity) (interface{}, error) {
-	errValidate := requests.ValidateCreateActivity(activity)
-	if errValidate != nil {
-		log.Println("[ActivityServiceImpl.Create] Validate error ", errValidate)
-		return errValidate, nil
-	}
-
 	activityCreate := models.Activity{}
 
 	err := smapping.FillStruct(&activityCreate, smapping.MapFields(&activity))

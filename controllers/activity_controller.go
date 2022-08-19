@@ -4,6 +4,7 @@ import (
 	"al-aswad/fiber-note-app/helpers"
 	"al-aswad/fiber-note-app/requests"
 	"al-aswad/fiber-note-app/services"
+	"log"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -36,6 +37,15 @@ func (a *activityController) Create(ctx *fiber.Ctx) error {
 		ctx.JSON(res)
 		ctx.Status(404)
 		return errReq
+	}
+
+	errValidate := requests.ValidateCreateActivity(requestActivity)
+	log.Println("validate ", errValidate)
+	if errValidate != nil {
+		res := helpers.BuildBadRequest("Bad Request", "title cannot be null", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
 	}
 
 	createActivity, err := a.activityServ.CreateActivity(requestActivity)
