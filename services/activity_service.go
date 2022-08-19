@@ -15,7 +15,7 @@ type ActivityService interface {
 	GetAllActivity() ([]models.Activity, error)
 	GetOne(id int) (models.Activity, error)
 	DeleteActivity(id int) (models.Activity, bool)
-	UpdateActivity(id int, activity requests.CreateActivity) (models.Activity, error)
+	UpdateActivity(id int, activity requests.CreateActivity) (models.Activity, bool)
 }
 
 type ActivityServiceImpl struct {
@@ -68,23 +68,24 @@ func (a *ActivityServiceImpl) GetOne(id int) (models.Activity, error) {
 	return activity, nil
 }
 
-func (a *ActivityServiceImpl) UpdateActivity(id int, activity requests.CreateActivity) (models.Activity, error) {
+func (a *ActivityServiceImpl) UpdateActivity(id int, activity requests.CreateActivity) (models.Activity, bool) {
 	activityUpdate := models.Activity{}
 
 	err := smapping.FillStruct(&activityUpdate, smapping.MapFields(&activity))
 
 	if err != nil {
 		log.Println("[ActivityServiceImpl.Create] error fill struct", err)
-		return activityUpdate, err
+		return activityUpdate, false
 	}
 
-	activityUpdate, err = a.activityRepo.Update(id, activityUpdate)
+	activityUpdate, status := a.activityRepo.Update(id, activityUpdate)
 
-	if err != nil {
-		return activityUpdate, err
+	if !status {
+		log.Println("Service Update Activity ", err)
+		return models.Activity{}, status
 	}
 
-	return activityUpdate, nil
+	return activityUpdate, true
 
 }
 

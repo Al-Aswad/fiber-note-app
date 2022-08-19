@@ -125,13 +125,13 @@ func (a *activityController) Update(ctx *fiber.Ctx) error {
 		return errBind
 	}
 
-	result, err := a.activityServ.UpdateActivity(id, archiveUpdate)
+	result, status := a.activityServ.UpdateActivity(id, archiveUpdate)
 
-	if err != nil {
-		res := helpers.BuildErrorResponse("Not Found", err.Error(), nil)
+	if !status {
+		res := helpers.BuildBadRequest("Not Found", "Activity with ID "+ctx.Params("id")+" Not Found", struct{}{})
 		ctx.JSON(res)
-		ctx.Status(404)
-		return err
+		ctx.Status(400)
+		return nil
 	}
 
 	res := helpers.BuildResponse("Success", "Success", result)

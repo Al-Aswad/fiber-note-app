@@ -11,7 +11,7 @@ type ActivityRepository interface {
 	Create(activity models.Activity) (models.Activity, error)
 	GetAll() ([]models.Activity, error)
 	GetOne(id int) (models.Activity, error)
-	Update(id int, activity models.Activity) (models.Activity, error)
+	Update(id int, activity models.Activity) (models.Activity, bool)
 	Delete(id int) bool
 }
 
@@ -57,17 +57,17 @@ func (a *activityRepository) GetOne(id int) (models.Activity, error) {
 	return activity, nil
 }
 
-func (a *activityRepository) Update(id int, activity models.Activity) (models.Activity, error) {
+func (a *activityRepository) Update(id int, activity models.Activity) (models.Activity, bool) {
 	var activityUpdate models.Activity
 
 	err := a.db.Debug().Model(&activityUpdate).Where("id = ?", id).Updates(&activity)
 	if err.RowsAffected == 0 {
-		log.Println("Update ", err.Error)
-		log.Println("Update Effect ", err.RowsAffected)
-		return models.Activity{}, err.Error
+		log.Println("Update Activity ", err.Error)
+		return models.Activity{}, false
 	}
 
-	return activityUpdate, nil
+	activityUpdate.ID = uint(id)
+	return activityUpdate, true
 }
 
 // Refactor
