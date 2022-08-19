@@ -51,6 +51,7 @@ func (a *activityRepository) GetOne(id int) (models.Activity, error) {
 	err := a.db.Debug().First(&activity, "id", id).Error
 	if err != nil {
 		log.Println("error ", activity)
+		log.Println("error ", &err)
 		return models.Activity{}, err
 	}
 	return activity, nil

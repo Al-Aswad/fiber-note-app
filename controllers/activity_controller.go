@@ -91,10 +91,10 @@ func (a *activityController) GetOne(ctx *fiber.Ctx) error {
 
 	activity, err := a.activityServ.GetOne(id)
 	if err != nil {
-		res := helpers.BuildErrorResponse("Not Found", err.Error(), nil)
+		res := helpers.BuildBadRequest("Not Found", "Activity with ID "+ctx.Params("id")+" Not Found", struct{}{})
 		ctx.JSON(res)
-		ctx.Status(404)
-		return err
+		ctx.Status(400)
+		return nil
 	}
 
 	res := helpers.BuildResponse("Success", "Success", activity)

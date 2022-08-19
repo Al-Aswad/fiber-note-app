@@ -61,6 +61,7 @@ func (a *ActivityServiceImpl) GetAllActivity() ([]models.Activity, error) {
 func (a *ActivityServiceImpl) GetOne(id int) (models.Activity, error) {
 	activity, err := a.activityRepo.GetOne(id)
 	if err != nil {
+		log.Println("Activity Service ", err)
 		return models.Activity{}, err
 	}
 
