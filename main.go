@@ -18,6 +18,10 @@ var activityRep repositories.ActivityRepository = repositories.NewActivityReposi
 var activityService services.ActivityService = services.NewActivitySerive(activityRep)
 var activityController controllers.ActivityController = controllers.NewActivityController(activityService)
 
+var todoRepo repositories.TodoRepository = repositories.NewTodoRepository(db)
+var todoService services.TodoService = services.NewTodoService(todoRepo)
+var todoController controllers.TodoController = controllers.NewTodoController(todoService)
+
 func main() {
 	err := db.Error
 	if err != nil {
@@ -34,6 +38,8 @@ func main() {
 	app.Get("/activity-groups/:id", activityController.GetOne)
 	app.Delete("/activity-groups/:id", activityController.Delete)
 	app.Patch("/activity-groups/:id", activityController.Update)
+
+	app.Post("/todo-items", todoController.Create)
 
 	app.Listen(":3000")
 }
