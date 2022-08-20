@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"al-aswad/fiber-note-app/models"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -9,6 +10,7 @@ import (
 type TodoRepository interface {
 	Create(todo models.Todo) (models.Todo, error)
 	GetAll() ([]models.Todo, error)
+	Update(id int, todo models.Todo) (models.Todo, bool)
 }
 
 type todoRepository struct {
@@ -40,4 +42,17 @@ func (t *todoRepository) GetAll() ([]models.Todo, error) {
 		return nil, err
 	}
 	return todo, nil
+}
+
+func (t *todoRepository) Update(id int, todo models.Todo) (models.Todo, bool) {
+	var todoUpdate models.Todo
+
+	err := t.db.Debug().Model(&todoUpdate).Where("id = ?", id).Updates(&todo)
+	if err.RowsAffected == 0 {
+		log.Println("Update Activity ", err.Error)
+		return models.Todo{}, false
+	}
+
+	todoUpdate.ID = uint(id)
+	return todoUpdate, true
 }

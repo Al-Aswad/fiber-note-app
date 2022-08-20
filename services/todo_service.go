@@ -12,6 +12,7 @@ import (
 type TodoService interface {
 	Create(todo requests.CreateTodo) (models.Todo, error)
 	GetAll() ([]models.Todo, error)
+	Update(id int, todo requests.UpdateTodo) (models.Todo, bool)
 }
 
 type todoService struct {
@@ -52,4 +53,24 @@ func (t *todoService) GetAll() ([]models.Todo, error) {
 
 	return todo, nil
 
+}
+
+func (t *todoService) Update(id int, todo requests.UpdateTodo) (models.Todo, bool) {
+	todoUpdate := models.Todo{}
+
+	err := smapping.FillStruct(&todoUpdate, smapping.MapFields(&todo))
+
+	if err != nil {
+		log.Println("[ActivityServiceImpl.Create] error fill struct", err)
+		return models.Todo{}, false
+	}
+
+	update, status := t.todoRepo.Update(id, todoUpdate)
+
+	if !status {
+		log.Println("Service Update Activity ", err)
+		return models.Todo{}, status
+	}
+
+	return update, true
 }

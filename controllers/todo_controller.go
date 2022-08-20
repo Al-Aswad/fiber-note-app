@@ -4,6 +4,7 @@ import (
 	"al-aswad/fiber-note-app/helpers"
 	"al-aswad/fiber-note-app/requests"
 	"al-aswad/fiber-note-app/services"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,6 +12,7 @@ import (
 type TodoController interface {
 	Create(ctx *fiber.Ctx) error
 	GetAll(ctx *fiber.Ctx) error
+	Update(ctx *fiber.Ctx) error
 }
 
 type todoController struct {
@@ -70,4 +72,50 @@ func (t *todoController) GetAll(ctx *fiber.Ctx) error {
 	ctx.Status(200)
 
 	return nil
+}
+
+func (t *todoController) Update(ctx *fiber.Ctx) error {
+	todoUpdate := requests.UpdateTodo{}
+
+	id, err := strconv.Atoi(ctx.Params("id"))
+
+	if err != nil {
+		res := helpers.BuildBadRequest("Bad Request", "ID not Valid", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	errBind := ctx.BodyParser(&todoUpdate)
+
+	if errBind != nil {
+		res := helpers.BuildBadRequest("Bad Request", "Data not Valid", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	errValidate := requests.ValidateUpdateTodo(todoUpdate)
+	if errValidate != nil {
+		res := helpers.BuildBadRequest("Bad Request", "title cannot be null", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	result, status := t.todoService.Update(id, todoUpdate)
+
+	if !status {
+		res := helpers.BuildBadRequest("Not Found", "Activity with ID "+ctx.Params("id")+" Not Found", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	res := helpers.BuildResponse("Success", "Success", result)
+	ctx.JSON(res)
+	ctx.Status(200)
+
+	return nil
+
 }

@@ -41,6 +41,7 @@ func main() {
 
 	app.Post("/todo-items", todoController.Create)
 	app.Get("/todo-items", todoController.GetAll)
+	app.Patch("/todo-items/:id", todoController.Update)
 
 	app.Listen(":3000")
 }
