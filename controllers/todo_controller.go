@@ -25,15 +25,23 @@ func NewTodoController(todoService services.TodoService) TodoController {
 
 func (t *todoController) Create(ctx *fiber.Ctx) error {
 
-	todoRequest := new(requests.CreateTodo)
+	var todoRequest requests.CreateTodo
 
-	if err := ctx.BodyParser(todoRequest); err != nil {
+	if err := ctx.BodyParser(&todoRequest); err != nil {
 		return ctx.Status(404).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}
 
-	result, err := t.todoService.Create(*todoRequest)
+	errValidate := requests.ValidateCreateTodo(todoRequest)
+	if errValidate != nil {
+		res := helpers.BuildBadRequest("Bad Request", "title cannot be null", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	result, err := t.todoService.Create(todoRequest)
 	if err != nil {
 		res := helpers.BuildErrorResponse("Not Found", err.Error(), nil)
 		ctx.JSON(res)
