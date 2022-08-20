@@ -11,6 +11,7 @@ type TodoRepository interface {
 	Create(todo models.Todo) (models.Todo, error)
 	GetAll() ([]models.Todo, error)
 	Update(id int, todo models.Todo) (models.Todo, bool)
+	Delete(id int) (bool, interface{})
 }
 
 type todoRepository struct {
@@ -55,4 +56,14 @@ func (t *todoRepository) Update(id int, todo models.Todo) (models.Todo, bool) {
 
 	todoUpdate.ID = uint(id)
 	return todoUpdate, true
+}
+
+func (t *todoRepository) Delete(id int) (bool, interface{}) {
+	errFound := t.db.Delete(&models.Todo{}, id)
+
+	if errFound.RowsAffected == 0 {
+		return false, errFound.Error
+	}
+
+	return true, nil
 }

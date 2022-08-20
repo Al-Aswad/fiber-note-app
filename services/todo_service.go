@@ -13,6 +13,7 @@ type TodoService interface {
 	Create(todo requests.CreateTodo) (models.Todo, error)
 	GetAll() ([]models.Todo, error)
 	Update(id int, todo requests.UpdateTodo) (models.Todo, bool)
+	Delete(id int) (bool, interface{})
 }
 
 type todoService struct {
@@ -73,4 +74,14 @@ func (t *todoService) Update(id int, todo requests.UpdateTodo) (models.Todo, boo
 	}
 
 	return update, true
+}
+
+func (t *todoService) Delete(id int) (bool, interface{}) {
+	delete, err := t.todoRepo.Delete(id)
+
+	if err != nil {
+		return false, err
+	}
+
+	return delete, nil
 }

@@ -4,6 +4,7 @@ import (
 	"al-aswad/fiber-note-app/helpers"
 	"al-aswad/fiber-note-app/requests"
 	"al-aswad/fiber-note-app/services"
+	"log"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,6 +14,7 @@ type TodoController interface {
 	Create(ctx *fiber.Ctx) error
 	GetAll(ctx *fiber.Ctx) error
 	Update(ctx *fiber.Ctx) error
+	Delete(ctx *fiber.Ctx) error
 }
 
 type todoController struct {
@@ -113,6 +115,32 @@ func (t *todoController) Update(ctx *fiber.Ctx) error {
 	}
 
 	res := helpers.BuildResponse("Success", "Success", result)
+	ctx.JSON(res)
+	ctx.Status(200)
+
+	return nil
+
+}
+
+func (t *todoController) Delete(ctx *fiber.Ctx) error {
+	id, err := strconv.Atoi(ctx.Params("id"))
+	if err != nil {
+		res := helpers.BuildBadRequest("Bad Request", "ID not Valid", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	status, _ := t.todoService.Delete(id)
+	log.Println("Status ", status)
+	if !status {
+		res := helpers.BuildBadRequest("Not Found", "Activity with ID "+ctx.Params("id")+" Not Found", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	res := helpers.BuildResponse("Success", "Success", helpers.EmptyResponse{})
 	ctx.JSON(res)
 	ctx.Status(200)
 
