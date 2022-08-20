@@ -15,6 +15,7 @@ type TodoController interface {
 	GetAll(ctx *fiber.Ctx) error
 	Update(ctx *fiber.Ctx) error
 	Delete(ctx *fiber.Ctx) error
+	GetOne(ctx *fiber.Ctx) error
 }
 
 type todoController struct {
@@ -146,4 +147,28 @@ func (t *todoController) Delete(ctx *fiber.Ctx) error {
 
 	return nil
 
+}
+
+func (t *todoController) GetOne(ctx *fiber.Ctx) error {
+	id, err := strconv.Atoi(ctx.Params("id"))
+	if err != nil {
+		res := helpers.BuildBadRequest("Bad Request", "ID not Valid", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	todo, err := t.todoService.GetOne(id)
+	if err != nil {
+		res := helpers.BuildBadRequest("Not Found", "Activity with ID "+ctx.Params("id")+" Not Found", struct{}{})
+		ctx.JSON(res)
+		ctx.Status(400)
+		return nil
+	}
+
+	res := helpers.BuildResponse("Success", "Success", todo)
+	ctx.JSON(res)
+	ctx.Status(200)
+
+	return nil
 }

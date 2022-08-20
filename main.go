@@ -41,6 +41,7 @@ func main() {
 
 	app.Post("/todo-items", todoController.Create)
 	app.Get("/todo-items", todoController.GetAll)
+	app.Get("/todo-items/:id", todoController.GetOne)
 	app.Patch("/todo-items/:id", todoController.Update)
 	app.Delete("/todo-items/:id", todoController.Delete)
 

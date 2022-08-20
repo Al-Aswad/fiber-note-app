@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"al-aswad/fiber-note-app/models"
-	"log"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +11,7 @@ type TodoRepository interface {
 	GetAll() ([]models.Todo, error)
 	Update(id int, todo models.Todo) (models.Todo, bool)
 	Delete(id int) (bool, interface{})
+	GetOne(id int) (models.Todo, error)
 }
 
 type todoRepository struct {
@@ -50,7 +50,6 @@ func (t *todoRepository) Update(id int, todo models.Todo) (models.Todo, bool) {
 
 	err := t.db.Debug().Model(&todoUpdate).Where("id = ?", id).Updates(&todo)
 	if err.RowsAffected == 0 {
-		log.Println("Update Activity ", err.Error)
 		return models.Todo{}, false
 	}
 
@@ -66,4 +65,14 @@ func (t *todoRepository) Delete(id int) (bool, interface{}) {
 	}
 
 	return true, nil
+}
+
+func (t *todoRepository) GetOne(id int) (models.Todo, error) {
+	todo := models.Todo{}
+
+	err := t.db.Debug().First(&todo, "id", id).Error
+	if err != nil {
+		return models.Todo{}, err
+	}
+	return todo, nil
 }
